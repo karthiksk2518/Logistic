@@ -140,7 +140,7 @@
   },
   "roles": {
     "admin": "एडमिन",
-    "shipper": "शिपर/परिवाहक",
+    "shipper": "शिपर",
     "carrier": "वाहक",
     "driver": "ड्रायव्हर",
     "soloDriver": "सोलो ड्रायव्हर",

@@ -148,7 +148,7 @@
   },
   "roles": {
     "admin": "Admin",
-    "shipper": "Shipper/Transporter",
+    "shipper": "Shipper",
     "carrier": "Carrier",
     "driver": "Driver",
     "soloDriver": "Solo Driver",

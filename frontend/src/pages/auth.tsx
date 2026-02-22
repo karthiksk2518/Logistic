@@ -49,7 +49,7 @@ const registerSchema = z.object({
   email: z.string().optional(),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
-  role: z.enum(["shipper/transporter", "carrier", "admin"]),
+  role: z.enum(["shipper", "carrier", "admin"]),
   companyName: z.string().optional(),
   companyPhone: z.string().optional(),
   city: z.string().optional(),
