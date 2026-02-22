@@ -8,10 +8,9 @@
 
 ## Table of Contents
 1. [Revenue Dashboard Fix](#1-revenue-dashboard-fix)
-2. [Backend Pricing & Carrier Endpoint Fixes](#2-backend-pricing--carrier-endpoint-fixes)
-3. [Carrier Dashboard Revenue Fix](#3-carrier-dashboard-revenue-fix)
-4. [Carrier Loads Demo Data Removal](#4-carrier-loads-demo-data-removal)
-5. [AI Concierge Analysis](#5-ai-concierge-analysis)
+2. [Carrier Dashboard Revenue Fix](#3-carrier-dashboard-revenue-fix)
+3. [Carrier Loads Demo Data Removal](#4-carrier-loads-demo-data-removal)
+4. [AI Concierge Analysis](#5-ai-concierge-analysis)
 
 ---
 
@@ -55,7 +54,7 @@
 
 ---
 
-## 3. Carrier Dashboard Revenue Fix
+## 2. Carrier Dashboard Revenue Fix
 
 ### File Modified
 - `frontend/src/pages/carrier/dashboard.tsx`
@@ -141,7 +140,7 @@ const performanceMetrics = useMemo(() => {
 
 ---
 
-## 4. Carrier Loads Demo Data Removal
+## 3. Carrier Loads Demo Data Removal
 
 ### File Modified
 - `frontend/src/pages/carrier/loads.tsx`
@@ -219,7 +218,7 @@ myBid: load.myBid,  // Use real myBid only
 
 ---
 
-## 5. AI Concierge Analysis
+## 4. AI Concierge Analysis
 
 ### File Analyzed
 - `frontend/src/components/ai-concierge.tsx`
@@ -255,33 +254,15 @@ myBid: load.myBid,  // Use real myBid only
 
 ### Files Modified
 1. ✅ `frontend/src/pages/admin/revenue-dashboard.tsx`
-2. ✅ `backend/src/routes.ts`
-3. ✅ `frontend/src/pages/carrier/dashboard.tsx`
-4. ✅ `frontend/src/pages/carrier/loads.tsx`
+2. ✅ `frontend/src/pages/carrier/dashboard.tsx`
+3. ✅ `frontend/src/pages/carrier/loads.tsx`
 
-### Documentation Created
-1. ✅ `REVENUE_DASHBOARD_FIX.md`
-2. ✅ `BACKEND_PRICING_FIXES.md`
-3. ✅ `CARRIER_DASHBOARD_REVENUE_FIX.md`
-4. ✅ `CARRIER_LOADS_DEMO_FIX.md`
-5. ✅ `BACKEND_CHANGES.md` (from previous session)
-6. ✅ `VOLUME_ANALYTICS_FIX.md` (from previous session)
-7. ✅ `TODAYCHANGES.md` (this file)
 
 ### Code Changes
 - **Total Lines Modified:** ~1,000+ lines
 - **Mock Data Removed:** 100% from all modified components
 - **Real API Integration:** 100% in all components
-- **Backend Endpoints:** 1 new, 3 modified
 - **Frontend Components:** 3 major fixes
-
-### Backend Changes
-- **New Endpoints:** 1
-  - `GET /api/carrier/my-orders`
-- **Modified Endpoints:** 3
-  - `POST /api/admin/loads/create` (per-tonne pricing)
-  - `GET /api/carrier/available-loads` (security fix)
-  - `POST /api/admin/assign` (pricing fix)
 
 ### Frontend Changes
 - **Admin Portal:**
@@ -298,8 +279,6 @@ myBid: load.myBid,  // Use real myBid only
 ### Admin Portal
 - [ ] Revenue Dashboard shows real data
 - [ ] Volume Analytics shows real data
-- [ ] Per-tonne pricing calculates correctly
-- [ ] Admin can post loads with per-tonne rates
 - [ ] Admin can assign carriers with proper pricing
 
 ### Carrier Portal
@@ -310,15 +289,6 @@ myBid: load.myBid,  // Use real myBid only
 - [ ] Carrier can accept fixed-price loads
 - [ ] My Orders endpoint works for direct assignments
 - [ ] Sensitive pricing fields are hidden
-
-### Backend
-- [ ] Per-tonne pricing calculation works
-- [ ] Carrier payout calculated correctly (90% of gross)
-- [ ] Admin decision stores rate metadata
-- [ ] New my-orders endpoint returns correct data
-- [ ] Available loads endpoint strips sensitive fields
-- [ ] Admin assign sets all pricing fields
-
 ---
 
 ## Known Issues
@@ -368,12 +338,7 @@ git checkout HEAD -- frontend/src/pages/carrier/loads.tsx
 git checkout HEAD -- frontend/src/pages/carrier/dashboard.tsx
 ```
 
-### 3. Backend Changes
-```bash
-git checkout HEAD -- backend/src/routes.ts
-```
-
-### 4. Revenue Dashboard
+### 3. Revenue Dashboard
 ```bash
 git checkout HEAD -- frontend/src/pages/admin/revenue-dashboard.tsx
 ```
@@ -463,14 +428,6 @@ git checkout HEAD -- frontend/src/pages/admin/revenue-dashboard.tsx
 ---
 
 ## Documentation Links
-
-### Detailed Documentation
-1. [Revenue Dashboard Fix](./REVENUE_DASHBOARD_FIX.md)
-2. [Backend Pricing Fixes](./BACKEND_PRICING_FIXES.md)
-3. [Carrier Dashboard Revenue Fix](./CARRIER_DASHBOARD_REVENUE_FIX.md)
-4. [Carrier Loads Demo Fix](./CARRIER_LOADS_DEMO_FIX.md)
-5. [Backend Changes (Session Auth)](./BACKEND_CHANGES.md)
-6. [Volume Analytics Fix](./VOLUME_ANALYTICS_FIX.md)
 
 ### Quick Reference
 - **Per-Tonne Pricing:** Backend calculates `rate × weight`
