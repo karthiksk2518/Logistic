@@ -336,7 +336,7 @@ function App() {
                   <TooltipProvider>
                     <AppContent />
                     <Toaster />
-                    <HelpBotWidget />
+                    {/* <HelpBotWidget /> */}
                   </TooltipProvider>
                 </CarrierDataProvider>
               </AdminDataProvider>

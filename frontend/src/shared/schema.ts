@@ -118,63 +118,63 @@ export const truckBodyCategories = [
     id: "open", 
     name: "Open Body", 
     description: "Open flatbed trucks for general cargo",
-    tonnageRange: "7.5-43 Ton",
+    tonnageRange: "6-40 Ton",
     icon: "truck"
   },
   { 
     id: "closed", 
     name: "Closed Body", 
     description: "Fully enclosed trucks for weather protection",
-    tonnageRange: "7.5-25 Ton",
+    tonnageRange: "4-24 Ton",
     icon: "box"
   },
   { 
     id: "container", 
     name: "Container", 
     description: "Container trucks for protected cargo",
-    tonnageRange: "7.5-30 Ton",
+    tonnageRange: "7-28 Ton",
     icon: "container"
   },
   { 
     id: "lcv", 
     name: "LCV (Light Commercial)", 
     description: "Small trucks for light loads",
-    tonnageRange: "0.75-7 Ton",
+    tonnageRange: "0.75-6.5 Ton",
     icon: "truck"
   },
   { 
     id: "trailer", 
     name: "Trailer", 
     description: "Large trailers for heavy cargo",
-    tonnageRange: "16-43 Ton",
+    tonnageRange: "25-40 Ton",
     icon: "trailer"
   },
   { 
     id: "tipper", 
     name: "Tipper", 
     description: "Trucks with tipping body for loose materials",
-    tonnageRange: "9-30 Ton",
+    tonnageRange: "16-28 Ton",
     icon: "tipper"
   },
   { 
     id: "tanker", 
     name: "Tanker", 
     description: "For liquid cargo - oil, water, chemicals",
-    tonnageRange: "8-36 Ton",
+    tonnageRange: "10-35 Ton",
     icon: "tanker"
   },
   { 
     id: "dumper", 
     name: "Dumper/Hyva", 
     description: "For construction materials and bulk",
-    tonnageRange: "9-36 Ton",
+    tonnageRange: "16-35 Ton",
     icon: "dumper"
   },
   { 
     id: "bulker", 
     name: "Bulker", 
     description: "For cement, fly ash and powder materials",
-    tonnageRange: "20-36 Ton",
+    tonnageRange: "25-36 Ton",
     icon: "bulker"
   },
   { 
@@ -195,39 +195,58 @@ export type OpenTruckSubtype = typeof openTruckSubtypes[number];
 
 // Full truck types with categories and capacity ranges (for UI display)
 export const indianTruckTypes = [
-  { value: "open_17_feet", label: "Open - 17 Feet", category: "open", capacityMin: 7.5, capacityMax: 12 },
-  { value: "open_19_feet", label: "Open - 19 Feet", category: "open", capacityMin: 9, capacityMax: 15 },
-  { value: "open_20_feet", label: "Open - 20 Feet", category: "open", capacityMin: 10, capacityMax: 18 },
-  { value: "open_22_feet", label: "Open - 22 Feet", category: "open", capacityMin: 12, capacityMax: 22 },
-  { value: "open_24_feet", label: "Open - 24 Feet", category: "open", capacityMin: 15, capacityMax: 25 },
-  { value: "open_10_wheeler", label: "Open - 10 Wheeler", category: "open", capacityMin: 16, capacityMax: 25 },
-  { value: "open_12_wheeler", label: "Open - 12 Wheeler", category: "open", capacityMin: 20, capacityMax: 30 },
-  { value: "open_14_wheeler", label: "Open - 14 Wheeler", category: "open", capacityMin: 25, capacityMax: 35 },
-  { value: "open_16_wheeler", label: "Open - 16 Wheeler", category: "open", capacityMin: 30, capacityMax: 40 },
-  { value: "open_18_wheeler", label: "Open - 18 Wheeler", category: "open", capacityMin: 35, capacityMax: 43 },
+  // ---------------- OPEN BODY ----------------
+  { value: "open_17_feet", label: "Open - 17 Feet", category: "open", capacityMin: 6, capacityMax: 9 },
+  { value: "open_19_feet", label: "Open - 19 Feet", category: "open", capacityMin: 7, capacityMax: 12 },
+  { value: "open_20_feet", label: "Open - 20 Feet", category: "open", capacityMin: 9, capacityMax: 14 },
+  { value: "open_22_feet", label: "Open - 22 Feet", category: "open", capacityMin: 10, capacityMax: 18 },
+  { value: "open_24_feet", label: "Open - 24 Feet", category: "open", capacityMin: 14, capacityMax: 20 },
+  { value: "open_10_wheeler", label: "Open - 10 Wheeler", category: "open", capacityMin: 16, capacityMax: 20 },
+  { value: "open_12_wheeler", label: "Open - 12 Wheeler", category: "open", capacityMin: 20, capacityMax: 25 },
+  { value: "open_14_wheeler", label: "Open - 14 Wheeler", category: "open", capacityMin: 25, capacityMax: 31 },
+  { value: "open_16_wheeler", label: "Open - 16 Wheeler", category: "open", capacityMin: 28, capacityMax: 35 },
+  { value: "open_18_wheeler", label: "Open - 18 Wheeler", category: "open", capacityMin: 32, capacityMax: 40 },
+
+  // ---------------- CLOSED BODY ----------------
   { value: "closed_17_feet", label: "Closed Body - 17 Feet", category: "closed", capacityMin: 4, capacityMax: 7 },
-  { value: "closed_19_feet", label: "Closed Body - 19 Feet", category: "closed", capacityMin: 6, capacityMax: 9 },
-  { value: "closed_20_feet", label: "Closed Body - 20 Feet", category: "closed", capacityMin: 7.5, capacityMax: 12 },
-  { value: "closed_22_feet", label: "Closed Body - 22 Feet", category: "closed", capacityMin: 9, capacityMax: 15 },
+  { value: "closed_19_feet", label: "Closed Body - 19 Feet", category: "closed", capacityMin: 5, capacityMax: 9 },
+  { value: "closed_20_feet", label: "Closed Body - 20 Feet", category: "closed", capacityMin: 7, capacityMax: 12 },
+  { value: "closed_22_feet", label: "Closed Body - 22 Feet", category: "closed", capacityMin: 9, capacityMax: 16 },
   { value: "closed_24_feet", label: "Closed Body - 24 Feet", category: "closed", capacityMin: 12, capacityMax: 18 },
-  { value: "closed_32_feet", label: "Closed Body - 32 Feet", category: "closed", capacityMin: 15, capacityMax: 25 },
-  { value: "container_20ft", label: "Container - 20 Ft", category: "container", capacityMin: 7.5, capacityMax: 20 },
-  { value: "container_32ft", label: "Container - 32 Ft", category: "container", capacityMin: 15, capacityMax: 30 },
-  { value: "container_40ft", label: "Container - 40 Ft", category: "container", capacityMin: 20, capacityMax: 30 },
+  { value: "closed_32_feet", label: "Closed Body - 32 Feet", category: "closed", capacityMin: 15, capacityMax: 24 },
+
+  // ---------------- CONTAINER ----------------
+  { value: "container_20ft", label: "Container - 20 Ft", category: "container", capacityMin: 7, capacityMax: 18 },
+  { value: "container_32ft", label: "Container - 32 Ft", category: "container", capacityMin: 14, capacityMax: 25 },
+  { value: "container_40ft", label: "Container - 40 Ft", category: "container", capacityMin: 20, capacityMax: 28 },
+
+  // ---------------- LCV ----------------
   { value: "lcv_tata_ace", label: "LCV - Tata Ace", category: "lcv", capacityMin: 0.75, capacityMax: 1 },
-  { value: "lcv_bolero", label: "LCV - Bolero Pickup", category: "lcv", capacityMin: 1, capacityMax: 1.5 },
+  { value: "lcv_bolero", label: "LCV - Bolero Pickup", category: "lcv", capacityMin: 1, capacityMax: 1.7 },
   { value: "lcv_14ft", label: "LCV - 14 Feet", category: "lcv", capacityMin: 2.5, capacityMax: 4 },
-  { value: "lcv_17ft", label: "LCV - 17 Feet", category: "lcv", capacityMin: 4, capacityMax: 7 },
+  { value: "lcv_17ft", label: "LCV - 17 Feet", category: "lcv", capacityMin: 4, capacityMax: 6.5 },
+
+  // ---------------- MINI PICKUP ----------------
   { value: "mini_pickup", label: "Mini/Pickup", category: "mini_pickup", capacityMin: 0.5, capacityMax: 2 },
-  { value: "trailer_40ft", label: "Trailer - 40 Ft", category: "trailer", capacityMin: 25, capacityMax: 35 },
-  { value: "trailer_triple_axle", label: "Trailer - Triple Axle", category: "trailer", capacityMin: 30, capacityMax: 43 },
-  { value: "tipper_10_wheel", label: "Tipper - 10 Wheeler", category: "tipper", capacityMin: 16, capacityMax: 22 },
-  { value: "tipper_12_wheel", label: "Tipper - 12 Wheeler", category: "tipper", capacityMin: 20, capacityMax: 30 },
+
+  // ---------------- TRAILER ----------------
+  { value: "trailer_40ft", label: "Trailer - 40 Ft", category: "trailer", capacityMin: 25, capacityMax: 34 },
+  { value: "trailer_triple_axle", label: "Trailer - Triple Axle", category: "trailer", capacityMin: 30, capacityMax: 40 },
+
+  // ---------------- TIPPER ----------------
+  { value: "tipper_10_wheel", label: "Tipper - 10 Wheeler", category: "tipper", capacityMin: 16, capacityMax: 21 },
+  { value: "tipper_12_wheel", label: "Tipper - 12 Wheeler", category: "tipper", capacityMin: 20, capacityMax: 28 },
+
+  // ---------------- TANKER ----------------
   { value: "tanker_oil", label: "Tanker - Oil/Fuel", category: "tanker", capacityMin: 10, capacityMax: 24 },
   { value: "tanker_water", label: "Tanker - Water", category: "tanker", capacityMin: 8, capacityMax: 20 },
-  { value: "tanker_chemical", label: "Tanker - Chemical", category: "tanker", capacityMin: 12, capacityMax: 36 },
+  { value: "tanker_chemical", label: "Tanker - Chemical", category: "tanker", capacityMin: 12, capacityMax: 35 },
+
+  // ---------------- DUMPER ----------------
   { value: "dumper_hyva", label: "Dumper - Hyva", category: "dumper", capacityMin: 16, capacityMax: 25 },
-  { value: "dumper_10_wheel", label: "Dumper - 10 Wheeler", category: "dumper", capacityMin: 20, capacityMax: 36 },
+  { value: "dumper_10_wheel", label: "Dumper - 10 Wheeler", category: "dumper", capacityMin: 20, capacityMax: 35 },
+
+  // ---------------- BULKER ----------------
   { value: "bulker_cement", label: "Bulker - Cement", category: "bulker", capacityMin: 25, capacityMax: 35 },
   { value: "bulker_fly_ash", label: "Bulker - Fly Ash", category: "bulker", capacityMin: 20, capacityMax: 36 },
 ] as const;

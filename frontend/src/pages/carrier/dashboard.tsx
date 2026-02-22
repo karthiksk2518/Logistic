@@ -177,7 +177,6 @@ export default function CarrierDashboard() {
   const { data: allLoads, isLoading: loadsLoading } = useLoads();
   const { data: allShipments } = useShipments();
   const { data: allSettlements } = useSettlements();
-  const { getRevenueAnalytics, completedTrips: mockCompletedTrips } = useCarrierData();
 
   // Fetch real performance metrics from trip history
   const { data: realPerformanceData } = useQuery<{
@@ -199,8 +198,8 @@ export default function CarrierDashboard() {
     queryKey: ["/api/carrier/performance"],
   });
 
-  // Calculate combined revenue (API + mock data like Revenue page)
-  const combinedRevenueData = useMemo(() => {
+  // Calculate real revenue data from settlements and shipments (no mock data)
+  const realRevenueData = useMemo(() => {
     const myShipments = (allShipments || []).filter((s: Shipment) => 
       s.carrierId === user?.id && s.status === 'delivered'
     );
@@ -209,37 +208,42 @@ export default function CarrierDashboard() {
       ? allSettlements.filter((s: any) => s.carrierId === user?.id && s.status === 'paid')
       : [];
     
-    // Calculate total real revenue from paid settlements
-    const totalSettlementRevenue = carrierSettlements.reduce((sum: number, s: any) => 
-      sum + parseFloat(s.carrierPayoutAmount?.toString() || '0'), 0
-    );
+    // Group settlements by month
+    const monthlyMap: Record<string, number> = {};
     
-    // Calculate revenue from delivered shipments (fallback if no settlements)
-    const shipmentRevenue = myShipments.reduce((sum: number, s: Shipment) => {
-      const load = (allLoads || []).find((l: Load) => l.id === s.loadId);
-      return sum + (load?.adminFinalPrice ? parseFloat(load.adminFinalPrice) * 0.85 : 0);
-    }, 0);
-
-    // Get mock data revenue
-    const mockRevenue = getRevenueAnalytics();
-    const mockTotalRevenue = mockRevenue?.totalRevenue || 0;
-    const mockCompletedCount = mockCompletedTrips?.length || 0;
-
-    // Combine API revenue with mock data
-    const realRevenue = totalSettlementRevenue > 0 ? totalSettlementRevenue : shipmentRevenue;
-    const totalRevenue = realRevenue + mockTotalRevenue;
-    const totalTrips = myShipments.length + mockCompletedCount;
+    carrierSettlements.forEach((settlement: any) => {
+      const date = new Date(settlement.paidAt || settlement.createdAt);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, '0')}`;
+      const amount = parseFloat(settlement.carrierPayoutAmount?.toString() || '0');
+      monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + amount;
+    });
+    
+    // Fallback: If no settlements, use shipments with estimated payout
+    if (Object.keys(monthlyMap).length === 0 && myShipments.length > 0) {
+      myShipments.forEach((shipment: Shipment) => {
+        const load = (allLoads || []).find((l: Load) => l.id === shipment.loadId);
+        if (load?.adminFinalPrice) {
+          const date = new Date(shipment.deliveredAt || shipment.createdAt);
+          const monthKey = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, '0')}`;
+          const estimatedPayout = parseFloat(load.adminFinalPrice) * 0.85; // 85% to carrier
+          monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + estimatedPayout;
+        }
+      });
+    }
+    
+    // Calculate totals
+    const totalRevenue = Object.values(monthlyMap).reduce((sum, val) => sum + val, 0);
+    const totalTrips = myShipments.length;
     
     return {
       totalRevenue,
       totalTrips,
+      monthlyMap,
       hasData: totalRevenue > 0 || totalTrips > 0,
-      realTrips: myShipments.length,
-      mockTrips: mockCompletedCount
     };
-  }, [allShipments, allSettlements, allLoads, user?.id, getRevenueAnalytics, mockCompletedTrips]);
+  }, [allShipments, allSettlements, allLoads, user?.id]);
 
-  // Calculate performance metrics - prioritize real API data, fallback to mock data
+  // Calculate performance metrics - prioritize real API data, fallback to mock data from carrier-data-store
   const performanceMetrics = useMemo(() => {
     // If real performance data exists from API, use it
     if (realPerformanceData?.hasData) {
@@ -254,71 +258,40 @@ export default function CarrierDashboard() {
       };
     }
 
-    // Fallback to mock data if no real trip history
-    const trips = mockCompletedTrips || [];
-    if (trips.length === 0) {
-      return null;
-    }
+    // Fallback: No performance data available
+    return null;
+  }, [realPerformanceData]);
 
-    // Calculate on-time delivery rate
-    const onTimeCount = trips.filter(t => t.onTimeDelivery).length;
-    const onTimeRate = Math.round((onTimeCount / trips.length) * 100);
-
-    // Calculate average driver performance rating (out of 5)
-    const avgDriverRating = trips.reduce((sum, t) => sum + t.driverPerformanceRating, 0) / trips.length;
-
-    // Calculate average shipper rating (out of 5)
-    const avgShipperRating = trips.reduce((sum, t) => sum + t.shipperRating, 0) / trips.length;
-
-    // Calculate overall score (weighted average, out of 5)
-    const overallScore = (avgDriverRating * 0.4 + avgShipperRating * 0.3 + (onTimeRate / 100) * 5 * 0.3);
-
-    return {
-      onTimeRate,
-      reliabilityScore: avgDriverRating,
-      communicationScore: avgShipperRating,
-      overallScore,
-      totalTrips: trips.length,
-      totalRatings: 0,
-      isRealData: false
-    };
-  }, [realPerformanceData, mockCompletedTrips]);
-
-  if (statsLoading || loadsLoading || isLoadingOnboarding) {
-    return (
-      <div className="flex items-center justify-center h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Note: Onboarding gate is now applied at the router level in App.tsx
-  // This component will only render for approved/verified carriers
-
-  // Use stats from the API endpoint
-  const activeTruckCount = dashboardStats?.activeTruckCount || 0;
-  const availableTruckCount = dashboardStats?.availableTruckCount || 0;
-  const totalTruckCount = dashboardStats?.totalTruckCount || 0;
-  const pendingBidsCount = dashboardStats?.pendingBidsCount || 0;
-  const activeTripsCount = dashboardStats?.activeTripsCount || 0;
-  const driversEnRoute = dashboardStats?.driversEnRoute || 0;
-  
-  // Use combined revenue data (API + mock data) for consistency with Revenue page
-  const currentMonthRevenue = combinedRevenueData.totalRevenue;
-  const hasRevenueData = combinedRevenueData.hasData;
-
+  // Prepare data for rendering (must be before early return to avoid hooks violation)
   const trucks = (allTrucks || []).filter((t: TruckType) => t.carrierId === user?.id);
   const loads = allLoads || [];
   const shipments = (allShipments || []).filter((s: Shipment) => s.carrierId === user?.id);
   
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentMonthName = monthNames[currentMonth];
   
-  const monthlyRevenueData = hasRevenueData 
-    ? [{ month: currentMonthName, revenue: currentMonthRevenue, fullMonth: `${monthNames[currentMonth]} (Current Month)` }]
-    : [];
+  // Generate monthly revenue chart data (last 6 months)
+  const monthlyRevenueData = useMemo(() => {
+    if (!realRevenueData.hasData) return [];
+    
+    const now = new Date();
+    const chartData = [];
+    
+    // Generate last 6 months
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, '0')}`;
+      const revenue = realRevenueData.monthlyMap[monthKey] || 0;
+      
+      chartData.push({
+        month: monthNames[date.getMonth()],
+        revenue,
+        fullMonth: `${monthNames[date.getMonth()]} ${date.getFullYear()}`,
+        year: date.getFullYear(),
+      });
+    }
+    
+    return chartData;
+  }, [realRevenueData]);
 
   const revenueChange = 0;
 
@@ -353,6 +326,29 @@ export default function CarrierDashboard() {
         status: shipment.status,
       };
     });
+
+  if (statsLoading || loadsLoading || isLoadingOnboarding) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Note: Onboarding gate is now applied at the router level in App.tsx
+  // This component will only render for approved/verified carriers
+
+  // Use stats from the API endpoint
+  const activeTruckCount = dashboardStats?.activeTruckCount || 0;
+  const availableTruckCount = dashboardStats?.availableTruckCount || 0;
+  const totalTruckCount = dashboardStats?.totalTruckCount || 0;
+  const pendingBidsCount = dashboardStats?.pendingBidsCount || 0;
+  const activeTripsCount = dashboardStats?.activeTripsCount || 0;
+  const driversEnRoute = dashboardStats?.driversEnRoute || 0;
+  
+  // Use real revenue data (no mock data)
+  const currentMonthRevenue = realRevenueData.totalRevenue;
+  const hasRevenueData = realRevenueData.hasData;
 
   // Show pending review banner if onboarding is pending or under_review
   const pendingReview = onboardingStatus?.status === "pending" || onboardingStatus?.status === "under_review";
@@ -547,9 +543,9 @@ export default function CarrierDashboard() {
         >
           <StatCard
             title={t("dashboard.monthlyRevenue")}
-            value={currentMonthRevenue > 0 ? formatCurrency(currentMonthRevenue) : t("dashboard.noData")}
+            value={currentMonthRevenue > 0 ? formatCurrency(currentMonthRevenue) : '0'}
             icon={DollarSign}
-            subtitle={hasRevenueData ? `${combinedRevenueData.totalTrips} ${t("dashboard.tripsCompleted")}` : t("dashboard.completeTripsToEarn")}
+            subtitle={hasRevenueData ? `${realRevenueData.totalTrips} ${t("dashboard.tripsCompleted")}` : t("dashboard.completeTripsToEarn")}
           />
         </div>
       </div>

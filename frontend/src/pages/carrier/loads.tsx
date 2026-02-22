@@ -116,153 +116,6 @@ function estimateDistanceFromCities(pickup: string, dropoff: string): number {
   return distanceMap[key1] || distanceMap[key2] || Math.floor(Math.random() * 800) + 200;
 }
 
-const simulatedLoads: CarrierLoad[] = [
-  {
-    id: "DEMO-001",
-    origin: "Mumbai, Maharashtra",
-    destination: "Delhi, NCR",
-    loadType: "32 ft MXL",
-    weight: "18",
-    estimatedDistance: 1420,
-    adminFinalPrice: "125000",
-    finalPrice: "112500",
-    allowCounterBids: true,
-    shipperName: "Reliance Industries",
-    bidCount: 3,
-    myBid: null,
-    postedByAdmin: true,
-    priceFixed: false,
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-    isSimulated: true,
-  },
-  {
-    id: "DEMO-002",
-    origin: "Bengaluru, Karnataka",
-    destination: "Chennai, Tamil Nadu",
-    loadType: "Container 20ft",
-    weight: "12",
-    estimatedDistance: 350,
-    adminFinalPrice: "45000",
-    finalPrice: "40500",
-    allowCounterBids: false,
-    shipperName: "Tata Motors",
-    bidCount: 5,
-    myBid: null,
-    postedByAdmin: true,
-    priceFixed: true,
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-    isSimulated: true,
-  },
-  {
-    id: "DEMO-003",
-    origin: "Ahmedabad, Gujarat",
-    destination: "Jaipur, Rajasthan",
-    loadType: "Taurus 21T",
-    weight: "22",
-    estimatedDistance: 680,
-    adminFinalPrice: "78000",
-    finalPrice: "70200",
-    allowCounterBids: true,
-    shipperName: "Adani Group",
-    bidCount: 2,
-    myBid: null,
-    postedByAdmin: true,
-    priceFixed: false,
-    createdAt: new Date(Date.now() - 1800000).toISOString(),
-    isSimulated: true,
-  },
-  {
-    id: "DEMO-004",
-    origin: "Kolkata, West Bengal",
-    destination: "Guwahati, Assam",
-    loadType: "32 ft SXL",
-    weight: "20",
-    estimatedDistance: 980,
-    adminFinalPrice: "92000",
-    finalPrice: "82800",
-    allowCounterBids: false,
-    shipperName: "ITC Limited",
-    bidCount: 4,
-    myBid: null,
-    postedByAdmin: true,
-    priceFixed: true,
-    createdAt: new Date(Date.now() - 5400000).toISOString(),
-    isSimulated: true,
-  },
-  {
-    id: "DEMO-005",
-    origin: "Pune, Maharashtra",
-    destination: "Hyderabad, Telangana",
-    loadType: "28 ft MXL",
-    weight: "15",
-    estimatedDistance: 560,
-    adminFinalPrice: "62000",
-    finalPrice: "55800",
-    allowCounterBids: true,
-    shipperName: "Mahindra Logistics",
-    bidCount: 6,
-    myBid: null,
-    postedByAdmin: true,
-    priceFixed: false,
-    createdAt: new Date(Date.now() - 900000).toISOString(),
-    isSimulated: true,
-  },
-  {
-    id: "DEMO-006",
-    origin: "Ludhiana, Punjab",
-    destination: "Delhi, NCR",
-    loadType: "Open Truck",
-    weight: "25",
-    estimatedDistance: 310,
-    adminFinalPrice: "38000",
-    finalPrice: "34200",
-    allowCounterBids: false,
-    shipperName: "Hero MotoCorp",
-    bidCount: 8,
-    myBid: null,
-    postedByAdmin: true,
-    priceFixed: true,
-    createdAt: new Date(Date.now() - 10800000).toISOString(),
-    isSimulated: true,
-  },
-  {
-    id: "DEMO-007",
-    origin: "Coimbatore, Tamil Nadu",
-    destination: "Kochi, Kerala",
-    loadType: "Container 40ft",
-    weight: "28",
-    estimatedDistance: 190,
-    adminFinalPrice: "32000",
-    finalPrice: "28800",
-    allowCounterBids: true,
-    shipperName: "Asian Paints",
-    bidCount: 1,
-    myBid: null,
-    postedByAdmin: true,
-    priceFixed: false,
-    createdAt: new Date(Date.now() - 14400000).toISOString(),
-    isSimulated: true,
-  },
-  {
-    id: "DEMO-008",
-    origin: "Nagpur, Maharashtra",
-    destination: "Bhopal, Madhya Pradesh",
-    loadType: "Trailer 20ft",
-    weight: "16",
-    estimatedDistance: 350,
-    adminFinalPrice: "48000",
-    finalPrice: "43200",
-    allowCounterBids: false,
-    shipperName: "Ultratech Cement",
-    bidCount: 3,
-    myBid: null,
-    postedByAdmin: true,
-    priceFixed: true,
-    createdAt: new Date(Date.now() - 21600000).toISOString(),
-    isSimulated: true,
-  },
-];
-
 function formatCurrency(amount: number): string {
   return `Rs. ${amount.toLocaleString("en-IN")}`;
 }
@@ -337,7 +190,6 @@ export default function CarrierLoadsPage() {
   const [dialogMode, setDialogMode] = useState<"accept" | "bid">("accept");
   const [selectedLoad, setSelectedLoad] = useState<CarrierLoad | null>(null);
   const [bidAmount, setBidAmount] = useState("");
-  const [simulatedLoadStates, setSimulatedLoadStates] = useState<Record<string, { myBid?: { amount: string }, status?: string }>>({});
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [detailLoad, setDetailLoad] = useState<CarrierLoad | null>(null);
@@ -495,7 +347,7 @@ export default function CarrierLoadsPage() {
   }, [rawApiLoads]);
 
   const loads = useMemo(() => {
-    return [...apiLoads, ...simulatedLoads];
+    return apiLoads;
   }, [apiLoads]);
 
   const bidMutation = useMutation({
@@ -528,7 +380,6 @@ export default function CarrierLoadsPage() {
 
   const loadsWithScores = useMemo(() => {
     return loads.map(load => {
-      const simState = load.isSimulated ? simulatedLoadStates[load.id] : undefined;
       const rec = recommendationMap.get(load.id);
       return {
         ...load,
@@ -539,10 +390,10 @@ export default function CarrierLoadsPage() {
         routeMatch: rec?.routeMatch || false,
         commodityMatch: rec?.commodityMatch || false,
         shipperMatch: rec?.shipperMatch || false,
-        myBid: simState?.myBid || load.myBid,
+        myBid: load.myBid,
       };
     });
-  }, [loads, simulatedLoadStates, recommendationMap, recommendations]);
+  }, [loads, recommendationMap, recommendations]);
 
   const filteredAndSortedLoads = useMemo(() => {
     const query = searchQuery.toLowerCase();
@@ -607,50 +458,9 @@ export default function CarrierLoadsPage() {
     setBidDialogOpen(true);
   };
 
-  const handleSimulatedAccept = (load: CarrierLoad, price: number) => {
-    setSimulatedLoadStates(prev => ({
-      ...prev,
-      [load.id]: {
-        myBid: { amount: price.toString() },
-        status: 'awarded'
-      }
-    }));
-    toast({
-      title: t("carrier.loadAccepted"),
-      description: t("carrier.loadAcceptedDesc", { price: formatCurrency(price) }),
-    });
-    setBidDialogOpen(false);
-    setBidAmount("");
-    setSelectedLoad(null);
-  };
-
-  const handleSimulatedBid = (load: CarrierLoad, amount: number, isCounter: boolean) => {
-    setSimulatedLoadStates(prev => ({
-      ...prev,
-      [load.id]: {
-        myBid: { amount: amount.toString() },
-        status: isCounter ? 'counter_received' : 'bidding'
-      }
-    }));
-    toast({
-      title: isCounter ? t("bids.counterSubmitted") : t("bids.bidPlacedSuccessfully"),
-      description: isCounter
-        ? t("bids.counterSubmittedDesc", { amount: formatCurrency(amount) })
-        : t("bids.bidSubmittedDesc", { amount: formatCurrency(amount) }),
-    });
-    setBidDialogOpen(false);
-    setBidAmount("");
-    setSelectedLoad(null);
-  };
-
   const handleAccept = async () => {
     if (!selectedLoad) return;
     const price = getCarrierPrice(selectedLoad);
-    
-    if (selectedLoad.isSimulated) {
-      handleSimulatedAccept(selectedLoad, price);
-      return;
-    }
     
     try {
       // Use direct accept for accepting at listed price - creates invoice and shipment immediately
@@ -679,11 +489,6 @@ export default function CarrierLoadsPage() {
   // Direct accept from card button - for solo carriers or when no truck/driver selection needed
   const handleDirectAccept = async (load: CarrierLoad & { matchScore: number }) => {
     const price = getCarrierPrice(load);
-    
-    if (load.isSimulated) {
-      handleSimulatedAccept(load, price);
-      return;
-    }
     
     // For enterprise carriers, open dialog to select truck/driver
     if (isEnterprise) {
@@ -731,11 +536,6 @@ export default function CarrierLoadsPage() {
     const amount = parseInt(bidAmount);
     const carrierPrice = getCarrierPrice(selectedLoad);
     const isCounterBid = !selectedLoad.priceFixed && amount !== carrierPrice;
-    
-    if (selectedLoad.isSimulated) {
-      handleSimulatedBid(selectedLoad, amount, isCounterBid);
-      return;
-    }
     
     try {
       await bidMutation.mutateAsync({
